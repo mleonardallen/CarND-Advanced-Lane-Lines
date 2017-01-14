@@ -13,8 +13,15 @@ class Logger():
 
     logging = False
     mode = None
-    frame = 0
+
     source = None
+
+    # frame in the video
+    frame = 0
+
+    # each image has several images collected
+    # step is the order output is colected per image
+    step = 1
 
     # unmodified image is kept for comparison
     unmodified = None
@@ -24,12 +31,9 @@ class Logger():
     undistorted = None
 
     @staticmethod
-    def reset():
-        Logger.frame = 0
-
-    @staticmethod
     def increment():
         Logger.frame += 1
+        Logger.step = 1
 
     @staticmethod
     def save(image, name):
@@ -52,7 +56,8 @@ class Logger():
             source = splitext(basename(Logger.source))[0]
             fname += source + '-'
 
-        fname += name
+        # the processing step number/name -- ex: 02-
+        fname += str(Logger.step).zfill(2) + '-' + name
 
         # if video mode, include the frame number
         if Logger.mode == 'video':
@@ -62,3 +67,5 @@ class Logger():
 
         log_image = np.concatenate((Logger.unmodified, image), axis=1)
         mpimg.imsave(fname, log_image)
+
+        Logger.step += 1

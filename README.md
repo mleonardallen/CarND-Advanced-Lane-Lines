@@ -17,3 +17,14 @@ The goals / steps of this project are the following:
 The images for camera calibration are stored in the folder called `camera_cal`.  The images in `test_images` are for testing your pipeline on single frames.  The video called `project_video.mp4` is the video your pipeline should work well on.  `challenge_video.mp4` is an extra (and optional) challenge for you if you want to test your pipeline.
 
 If you're feeling ambitious (totally optional though), don't stop there!  We encourage you to go out and take video of your own, calibrate your camera and show us how you would implement this project from scratch!
+
+
+```
+python main.py
+
+--mode [{test_images,video,calibrate}]
+                      Calibrate camera or run pipeline on test images or video
+--source [SOURCE]     Input video
+--out [OUT]           Output video
+--log                 Log output images
+```

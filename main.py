@@ -13,7 +13,7 @@ def main(mode=None, source=None, out=None, log=False):
     Logger.logging = log
     Logger.mode = mode
 
-    if mode == 'test':
+    if mode == 'test_images':
         images = glob.glob('test_images/*.jpg')
         for idx, fname in enumerate(images):
             Logger.source = fname
@@ -30,7 +30,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description=None)
 
-    parser.add_argument('--mode', nargs='?', default='test', choices=['test', 'video', 'calibrate'], help='Run pipeline on test images or video')
+    parser.add_argument('--mode', nargs='?', default='test_images',
+        choices=['test_images', 'video', 'calibrate'],
+        help='Calibrate camera or run pipeline on test images or video')
     parser.add_argument('--source', nargs='?', default='project_video.mp4', help='Input video')
     parser.add_argument('--out', nargs='?', default='out.mp4', help='Output video')
     parser.add_argument('--log', action='store_true', help='Log output images')
