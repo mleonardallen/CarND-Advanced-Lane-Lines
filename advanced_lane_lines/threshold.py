@@ -9,25 +9,34 @@ config.read('config.cfg')
 thresholds = config.items('thresholds')
 thresholds = {item[0]: tuple(map(float, item[1].split())) for item in thresholds}
 
+kernels = config.items('threshold_kernels')
+kernels = {item[0]: int(item[1]) for item in kernels}
+
 def combined_thresh(image):
     """ Returns thresholded binary image
     Sobel directional, magnitude, and direction combined
     """
 
+    sobelx = abs_sobel_thresh(image, orient='x', sobel_kernel=3, thresh=thresholds.get('magnitude'))
+
     # Sobel threshold
-    mag_binary = mag_thresh(image, sobel_kernel=3, thresh=thresholds.get('magnitude'))
-    dir_binary = dir_threshold(image, sobel_kernel=3, thresh=thresholds.get('direction'))
+    # mag_binary = mag_thresh(image, sobel_kernel=kernels.get('magnitude'), thresh=thresholds.get('magnitude'))
+    # Logger.save(mag_binary, 'magnitude')
 
-    sobel_binary = np.zeros_like(dir_binary)
-    sobel_binary[((mag_binary == 1) & (dir_binary == 1))] = 1
+    # dir_binary = dir_threshold(image, sobel_kernel=kernels.get('direction'), thresh=thresholds.get('direction'))
+    # Logger.save(dir_binary, 'direction')
 
-    Logger.save(sobel_binary, 'magnitude-and-direction')
+    # sobel_binary = np.zeros_like(sobelx)
+    # sobel_binary[((sobelx == 1) & (dir_binary == 1))] = 1
 
-    # Saturation threshold
-    hls_binary = hls_select(image, thresh=thresholds.get('saturation_high'))
+    Logger.save(sobelx, 'magnitude-and-direction')
 
-    binary_output = np.zeros_like(image)
-    binary_output[(sobel_binary == 1) | (hls_binary == 1)] = 1
+    # Saturation threshold (high)
+    hls_binary_high = hls_select(image, thresh=thresholds.get('saturation'))
+    Logger.save(hls_binary_high, 'saturation')
+
+    binary_output = np.zeros(image.shape[:2], dtype='uint8')
+    binary_output[(sobelx == 1) | (hls_binary_high == 1)] = 1
 
     Logger.save(binary_output, 'combined')
 
@@ -42,10 +51,8 @@ def hls_select(img, thresh=(0, 1)):
     img = img[:,:,saturation_channel]
 
     # Apply a threshold to the saturation channel
-    binary_output = np.zeros_like(img)
+    binary_output = np.zeros_like(img, dtype='uint8')
     binary_output[(img > thresh[0]) & (img <= thresh[1])] = 1
-
-    Logger.save(binary_output, 'hls')
 
     return binary_output
 
@@ -54,6 +61,8 @@ def abs_sobel_thresh(img, orient = 'x', sobel_kernel = 3, thresh = (0, 255)):
 
     # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    kernel = np.ones((15, 15), np.uint8)
+    image = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
 
     # Take the gradient in given orientation
     if orient == 'x':
@@ -66,10 +75,8 @@ def abs_sobel_thresh(img, orient = 'x', sobel_kernel = 3, thresh = (0, 255)):
     # Scale to 8-bit (0 - 255) and convert to type = np.uint8
     scaled_sobel = np.uint8(255*abs_sobel/np.max(abs_sobel))
     # Create a binary mask where thresholds are met
-    binary_output = np.zeros_like(scaled_sobel)
+    binary_output = np.zeros_like(scaled_sobel, dtype='uint8')
     binary_output[(scaled_sobel >= thresh[0]) & (scaled_sobel <= thresh[1])] = 1
-
-    Logger.save(binary_output, 'sobel' + orient)
 
     return binary_output
 
@@ -90,10 +97,8 @@ def mag_thresh(img, sobel_kernel = 3, thresh = (0, 255)):
     # Scale to 8-bit (0 - 255) and convert to type = np.uint8
     scaled_sobel = np.uint8(255*magnitude/np.max(magnitude))
     # Create a binary mask where mag thresholds are met
-    binary_output = np.zeros_like(scaled_sobel)
+    binary_output = np.zeros_like(scaled_sobel, dtype='uint8')
     binary_output[(scaled_sobel >= thresh[0]) & (scaled_sobel <= thresh[1])] = 1
-
-    Logger.save(binary_output, 'magnitude')
 
     return binary_output
 
@@ -115,9 +120,7 @@ def dir_threshold(img, sobel_kernel = 3, thresh = (0, np.pi / 2)):
     # Use np.arctan2(abs_sobely, abs_sobelx) to calculate the direction of the gradient 
     arctan_sobel = np.arctan2(abs_sobely, abs_sobelx)
     # Create a binary mask where direction thresholds are met
-    binary_output = np.zeros_like(arctan_sobel)
+    binary_output = np.zeros_like(arctan_sobel, dtype='uint8')
     binary_output[(arctan_sobel >= thresh[0]) & (arctan_sobel <= thresh[1])] = 1
-
-    Logger.save(binary_output, 'direction')
 
     return binary_output

@@ -12,16 +12,12 @@ frames = int(config.get('logging', 'frames'))
 class Logger():
 
     logging = False
-    mode = None
 
-    source = None
-
-    # frame in the video
-    frame = 0
-
-    # each image has several images collected
-    # step is the order output is colected per image
-    step = 1
+    # these properties are used for output filename
+    mode = None # test_images, video
+    source = None # name of the input image
+    frame = 0 # frame in the video
+    step = 1 # step number for image pipeline
 
     # unmodified image is kept for comparison
     unmodified = None
@@ -36,13 +32,21 @@ class Logger():
         Logger.step = 1
 
     @staticmethod
+    def get_source():
+        return splitext(basename(Logger.source))[0]
+
+    @staticmethod
     def save(image, name):
+
+        # do not save images if logging is turned off
+        if Logger.logging == False:
+            return
 
         assert Logger.mode is not None, "mode is not set [video, test]"
 
         # convert binary images to color before saving
         if len(image.shape) == 2:
-            image = image.reshape(image.shape + (1,)).astype('uint8') * 255
+            image = image.reshape(image.shape + (1,)) * 255
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
         # for video mode, save every x frames

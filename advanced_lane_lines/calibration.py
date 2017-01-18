@@ -36,7 +36,6 @@ def calibrate_camera():
             objpoints.append(objp)
             imgpoints.append(corners)
 
-
     img_size = (gray.shape[1], gray.shape[0])
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
 
@@ -46,10 +45,13 @@ def calibrate_camera():
     dist_pickle["dist"] = dist
     pickle.dump(dist_pickle, open(path, "wb"))
 
-def undistort(image):
+def get_calibration():
     assert calibration is not None, 'Cannot undistort.  Run camera calibration, and try again'
+    return calibration
 
-    image = cv2.undistort(image, calibration.get('mtx'), calibration.get('dist'))
+def undistort(image):
+    cal = get_calibration()
+    image = cv2.undistort(image, cal.get('mtx'), cal.get('dist'))
 
     Logger.undistort = image
     Logger.save(image, 'undistort')
