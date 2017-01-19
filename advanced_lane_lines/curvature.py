@@ -1,10 +1,55 @@
+from advanced_lane_lines.log import Logger
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import signal
+from sklearn.cluster import KMeans
 
-def histogram(img):
-    histogram = np.sum(img[img.shape[0]/2:,:], axis=0)
+def histogram(image):
+
+    histogram = get_histogram(image)
+    # save picture of histogram
+    fig = plt.figure(figsize=(8, 6))
     plt.plot(histogram)
+    Logger.save(fig, 'histogram')
 
+    peaks = get_peaks(histogram)
+    height = image.shape[0]
+    slices = 30
+    search_window = 50
+
+    left_pos = peaks[0]
+    right_pos = peaks[-1]
+
+    # blank image to store lane line pixels
+    blank = np.zeros_like(image)
+
+    for bottom in range(height, 0, -slices):
+        top = bottom - slices
+        image_slice = image[top : bottom, :]
+
+        # left window
+        left_pixels = image_slice[:, (left_pos - search_window): (left_pos + search_window)]
+        blank[top : bottom, (left_pos - search_window): (left_pos + search_window)][left_pixels == 1] = 1
+        peaks = get_peaks(get_histogram(left_pixels))
+        if len(peaks):
+            left_pos += peaks[0] - search_window
+
+        right_pixels = image_slice[:, (right_pos - search_window): (right_pos + search_window)]
+        blank[top : bottom, (right_pos - search_window): (right_pos + search_window)][right_pixels == 1] = 1
+
+        peaks = get_peaks(get_histogram(right_pixels))
+        if len(peaks):
+            right_pos += peaks[0] - search_window
+
+    Logger.save(blank, 'slices')
+
+def get_peaks(histogram):
+    if not np.count_nonzero(histogram):
+        return []
+    return signal.find_peaks_cwt(histogram, np.arange(30,300))
+
+def get_histogram(image):
+    return np.sum(image[image.shape[0]/2:,:], axis=0)
 
 def scatterplot():
     # Generate some fake data to represent lane-line pixels

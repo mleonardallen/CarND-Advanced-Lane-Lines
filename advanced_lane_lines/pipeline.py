@@ -1,7 +1,7 @@
 from advanced_lane_lines.calibration import undistort
 from advanced_lane_lines.threshold import combined_thresh
 from advanced_lane_lines.perspective import transform
-from advanced_lane_lines.curvature import histogram
+from advanced_lane_lines.curvature import histogram, scatterplot
 from advanced_lane_lines.log import Logger
 
 def pipeline(image):
@@ -15,9 +15,9 @@ def pipeline(image):
     image = transform(image)
     # Detect lane pixels and fit to find lane boundary.
     histogram(image)
+    # scatterplot()
     # Determine curvature of the lane and vehicle position with respect to center.
     # Warp the detected lane boundaries back onto the original image.
     # Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
-
     Logger.increment()
     return image

@@ -38,6 +38,8 @@ class Logger():
     @staticmethod
     def save(image, name):
 
+        image_type = type(image).__name__
+
         # do not save images if logging is turned off
         if Logger.logging == False:
             return
@@ -45,7 +47,7 @@ class Logger():
         assert Logger.mode is not None, "mode is not set [video, test]"
 
         # convert binary images to color before saving
-        if len(image.shape) == 2:
+        if image_type == 'ndarray' and len(image.shape)== 2:
             image = image.reshape(image.shape + (1,)) * 255
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
@@ -69,7 +71,9 @@ class Logger():
 
         fname += '.jpg'
 
-        log_image = np.concatenate((Logger.unmodified, image), axis=1)
-        mpimg.imsave(fname, log_image)
+        if image_type == 'ndarray':
+            mpimg.imsave(fname, image)
+        elif image_type == 'Figure':
+            image.savefig(fname)
 
         Logger.step += 1
