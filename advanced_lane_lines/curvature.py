@@ -11,6 +11,7 @@ def histogram(image):
     fig = plt.figure(figsize=(8, 6))
     plt.plot(histogram)
     Logger.save(fig, 'histogram')
+    plt.close()
 
     peaks = get_peaks(histogram)
     height = image.shape[0]
@@ -21,27 +22,33 @@ def histogram(image):
     right_pos = peaks[-1]
 
     # blank image to store lane line pixels
-    blank = np.zeros_like(image)
+    left_blank = np.zeros_like(image)
+    right_blank = np.zeros_like(image)
 
     for bottom in range(height, 0, -slices):
         top = bottom - slices
         image_slice = image[top : bottom, :]
 
-        # left window
-        left_pixels = image_slice[:, (left_pos - search_window): (left_pos + search_window)]
-        blank[top : bottom, (left_pos - search_window): (left_pos + search_window)][left_pixels == 1] = 1
-        peaks = get_peaks(get_histogram(left_pixels))
-        if len(peaks):
-            left_pos += peaks[0] - search_window
+        left_blank, left_pos = seek(left_blank, image_slice, left_pos, top, bottom, search_window)
+        right_blank, right_pos = seek(right_blank, image_slice, right_pos, top, bottom, search_window)
 
-        right_pixels = image_slice[:, (right_pos - search_window): (right_pos + search_window)]
-        blank[top : bottom, (right_pos - search_window): (right_pos + search_window)][right_pixels == 1] = 1
+    fig = plt.figure(figsize=(8, 6))
+    fit_line(left_blank, color='red')
+    fit_line(right_blank, color='blue')
+    plt.gca().invert_yaxis()
+    Logger.save(fig, 'curvature')
+    plt.close()
 
-        peaks = get_peaks(get_histogram(right_pixels))
-        if len(peaks):
-            right_pos += peaks[0] - search_window
 
-    Logger.save(blank, 'slices')
+def seek(blank, image_slice, pos, top, bottom, search_window):
+    pixels = image_slice[:, (pos - search_window): (pos + search_window)]
+    blank[top : bottom, (pos - search_window): (pos + search_window)][pixels == 1] = 1
+
+    peaks = get_peaks(get_histogram(pixels))
+    if len(peaks):
+        pos += peaks[0] - search_window
+
+    return blank, pos
 
 def get_peaks(histogram):
     if not np.count_nonzero(histogram):
@@ -50,6 +57,36 @@ def get_peaks(histogram):
 
 def get_histogram(image):
     return np.sum(image[image.shape[0]/2:,:], axis=0)
+
+    # Logger.save(blank, 'slices')
+
+def fit_line(image, color='red'):
+
+    yvals, xvals = image.nonzero()
+    fit = np.polyfit(yvals, xvals, 2)
+    fitx = fit[0] * yvals ** 2 + fit[1] * yvals + fit[2]
+
+    plt.plot(xvals, yvals, 'o', color=color)
+    plt.plot(fitx, yvals, color='green', linewidth=3)
+
+    curvature = get_curvature(yvals, fit)
+
+def get_curvature_radians():
+    # Define conversions in x and y from pixels space to meters
+    ym_per_pix = 30/720 # meters per pixel in y dimension
+    xm_per_pix = 3.7/700 # meteres per pixel in x dimension
+
+    fit_cr = np.polyfit(yvals * ym_per_pix, xvals * xm_per_pix, 2)
+    curverad = ((1 + (2 * fit_cr[0] * y_eval + fit_cr[1]) ** 2) ** 1.5) / np.absolute(2 * fit_cr[0])
+    # Now our radius of curvature is in meters
+    # Example values: 3380.7 m    3189.3 m
+
+def get_curvature(yvals, fit):
+    # Define y-value where we want radius of curvature
+    y_eval = np.max(yvals)
+    curverad = ((1 + (2 * fit[0] * y_eval + fit[1]) ** 2) ** 1.5) / np.absolute(2*fit[0])
+    return curverad
+    # Example values: 1163.9    1213.7
 
 def scatterplot():
     # Generate some fake data to represent lane-line pixels
