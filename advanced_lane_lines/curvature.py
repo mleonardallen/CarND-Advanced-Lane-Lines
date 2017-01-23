@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from sklearn.cluster import KMeans
 
-def histogram(image):
+def get_curvature_values(image):
 
     histogram = get_histogram(image)
     # save picture of histogram
@@ -33,14 +33,15 @@ def histogram(image):
         right_blank, right_pos = seek(right_blank, image_slice, right_pos, top, bottom, search_window)
 
     fig = plt.figure(figsize=(8, 6))
-    fit_line(left_blank, color='red')
-    fit_line(right_blank, color='blue')
+    yvals, left_fitx, left_curvature = fit_line(left_blank, color='red')
+    yvals, right_fitx, right_curvature = fit_line(right_blank, color='blue')
     plt.xlim(0, image.shape[1])
     plt.ylim(0, image.shape[0])
     plt.gca().invert_yaxis()
     Logger.save(fig, 'curvature')
     plt.close()
 
+    return yvals, left_fitx, right_fitx
 
 def seek(blank, image_slice, pos, top, bottom, search_window):
     pixels = image_slice[:, (pos - search_window): (pos + search_window)]
@@ -72,6 +73,7 @@ def fit_line(image, color='red'):
     plt.plot(fitx, yvals, color='green', linewidth=3)
 
     curvature = get_curvature(yvals, fit)
+    return yvals, fitx, curvature
 
 def get_curvature_radians():
     # Define conversions in x and y from pixels space to meters
@@ -87,30 +89,28 @@ def get_curvature(yvals, fit):
     # Define y-value where we want radius of curvature
     y_eval = np.max(yvals)
     curverad = ((1 + (2 * fit[0] * y_eval + fit[1]) ** 2) ** 1.5) / np.absolute(2*fit[0])
-    return curverad
     # Example values: 1163.9    1213.7
+    return curverad
 
-def scatterplot():
-    # Generate some fake data to represent lane-line pixels
-    yvals = np.linspace(0, 100, num=101)*7.2  # to cover same y-range as image
-    leftx = np.array([200 + (elem**2)*4e-4 + np.random.randint(-50, high=51) 
-                                  for idx, elem in enumerate(yvals)])
-    leftx = leftx[::-1]  # Reverse to match top-to-bottom in y
-    rightx = np.array([900 + (elem**2)*4e-4 + np.random.randint(-50, high=51) 
-                                    for idx, elem in enumerate(yvals)])
-    rightx = rightx[::-1]  # Reverse to match top-to-bottom in y
+def draw(image, yvals, left_fitx, right_fitx):
 
-    # Fit a second order polynomial to each fake lane line
-    left_fit = np.polyfit(yvals, leftx, 2)
-    left_fitx = left_fit[0]*yvals**2 + left_fit[1]*yvals + left_fit[2]
-    right_fit = np.polyfit(yvals, rightx, 2)
-    right_fitx = right_fit[0]*yvals**2 + right_fit[1]*yvals + right_fit[2]
+    # Create an image to draw the lines on
+    warp_zero = np.zeros_like(image).astype(np.uint8)
+    color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
 
-    # Plot up the fake data
-    plt.plot(leftx, yvals, 'o', color='red')
-    plt.plot(rightx, yvals, 'o', color='blue')
-    plt.xlim(0, 1280)
-    plt.ylim(0, 720)
-    plt.plot(left_fitx, yvals, color='green', linewidth=3)
-    plt.plot(right_fitx, yvals, color='green', linewidth=3)
-    plt.gca().invert_yaxis() # to visualize as we do the images
+    print(yvals.shape, left_fitx.shape)
+    
+    left_yvals = yvals[:len(left_fitx)]
+    right_yvals = yvals[:len(right_fitx)]
+
+    print(left_yvals.shape, left_fitx.shape)
+
+    # Recast the x and y points into usable format for cv2.fillPoly()
+    pts_left = np.array([np.transpose(np.vstack([left_fitx, left_yvals]))])
+    pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, right_yvals])))])
+    pts = np.hstack((pts_left, pts_right))
+
+    # Draw the lane onto the blank image
+    image = cv2.fillPoly(color_warp, np.int_([pts]), (0,255, 0))
+    return image
+

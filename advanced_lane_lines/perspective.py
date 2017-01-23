@@ -5,18 +5,14 @@ import numpy as np
 import copy
 import matplotlib.pyplot as plt
 
-
 config = ConfigParser()
 config.read('config.cfg')
-
 
 def transform(image):
 
     src, dest = get_transform_points(image)
-    M = cv2.getPerspectiveTransform(
-        np.array([src.get('tl'), src.get('tr'), src.get('bl'), src.get('br')], np.float32), 
-        np.array([dest.get('tl'), dest.get('tr'), dest.get('bl'), dest.get('br')], np.float32), 
-    )
+    M = get_m(src, dest)
+    Minv = get_m(dest, src)
     image_size = (image.shape[1], image.shape[0])
     image = cv2.warpPerspective(image, M, image_size)
 
@@ -36,7 +32,22 @@ def transform(image):
     Logger.save(image_dest, 'perspective-transform-dest')
     Logger.save(image, 'perspective-transform-binary')
 
+    return image, M, Minv
+
+def untransform(image, Minv):
+    # Warp the blank back to original image space using inverse perspective matrix (Minv)
+    newwarp = cv2.warpPerspective(image, Minv, (image.shape[1], image.shape[0]))
+    # Combine the result with the original image
+    image = cv2.addWeighted(Logger.undistort, 1, newwarp, 0.3, 0)
+    Logger.save(image, 'lane-lines')
     return image
+
+def get_m(src, dest):
+    M = cv2.getPerspectiveTransform(
+        np.array([src.get('tl'), src.get('tr'), src.get('bl'), src.get('br')], np.float32), 
+        np.array([dest.get('tl'), dest.get('tr'), dest.get('bl'), dest.get('br')], np.float32), 
+    )
+    return M
 
 def region_of_interest(img, vertices):
     """

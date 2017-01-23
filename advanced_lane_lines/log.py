@@ -38,7 +38,6 @@ class Logger():
 
     @staticmethod
     def check_directory(dir):
-        # dir = os.path.dirname(filename)
         try:
             os.stat(dir)
         except:
@@ -64,7 +63,6 @@ class Logger():
         if Logger.mode == 'video' and Logger.frame % frames != 0:
             return
 
-        
         fname = 'output_images/'
         Logger.check_directory(fname)
         fname += Logger.mode + '/'
@@ -83,7 +81,6 @@ class Logger():
             fname += '-' + str(Logger.frame)
 
         fname += '.png'
-
 
         if image_type == 'ndarray':
             mpimg.imsave(fname, image)
