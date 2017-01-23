@@ -35,6 +35,8 @@ def histogram(image):
     fig = plt.figure(figsize=(8, 6))
     fit_line(left_blank, color='red')
     fit_line(right_blank, color='blue')
+    plt.xlim(0, image.shape[1])
+    plt.ylim(0, image.shape[0])
     plt.gca().invert_yaxis()
     Logger.save(fig, 'curvature')
     plt.close()

@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import os
 
 config = ConfigParser()
 config.read('config.cfg')
@@ -36,6 +37,14 @@ class Logger():
         return splitext(basename(Logger.source))[0]
 
     @staticmethod
+    def check_directory(dir):
+        # dir = os.path.dirname(filename)
+        try:
+            os.stat(dir)
+        except:
+            os.mkdir(dir)
+
+    @staticmethod
     def save(image, name):
 
         image_type = type(image).__name__
@@ -55,7 +64,11 @@ class Logger():
         if Logger.mode == 'video' and Logger.frame % frames != 0:
             return
 
-        fname = 'output_images/' + Logger.mode + '/'
+        
+        fname = 'output_images/'
+        Logger.check_directory(fname)
+        fname += Logger.mode + '/'
+        Logger.check_directory(fname)
 
         # if image/video source is given use as prefix
         if Logger.source:
@@ -69,7 +82,8 @@ class Logger():
         if Logger.mode == 'video':
             fname += '-' + str(Logger.frame)
 
-        fname += '.jpg'
+        fname += '.png'
+
 
         if image_type == 'ndarray':
             mpimg.imsave(fname, image)
