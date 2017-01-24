@@ -15,8 +15,8 @@ def pipeline(image):
     image, M, Minv = transform(image)
     # Detect lane pixels and fit to find lane boundary.
     # scatterplot()
-    yvals, left_fitx, right_fitx = get_curvature_values(image)
-    image = draw(image, yvals, left_fitx, right_fitx)
+    left_yvals, right_yvals, left_fitx, right_fitx = get_curvature_values(image)
+    image = draw(image, left_yvals, right_yvals, left_fitx, right_fitx)
     # Warp the detected lane boundaries back onto the original image.
     image = untransform(image, Minv)
     

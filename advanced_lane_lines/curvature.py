@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from sklearn.cluster import KMeans
+import cv2
 
 def get_curvature_values(image):
 
@@ -33,15 +34,15 @@ def get_curvature_values(image):
         right_blank, right_pos = seek(right_blank, image_slice, right_pos, top, bottom, search_window)
 
     fig = plt.figure(figsize=(8, 6))
-    yvals, left_fitx, left_curvature = fit_line(left_blank, color='red')
-    yvals, right_fitx, right_curvature = fit_line(right_blank, color='blue')
+    left_yvals, left_fitx, left_curvature = fit_line(left_blank, color='red')
+    right_yvals, right_fitx, right_curvature = fit_line(right_blank, color='blue')
     plt.xlim(0, image.shape[1])
     plt.ylim(0, image.shape[0])
     plt.gca().invert_yaxis()
     Logger.save(fig, 'curvature')
     plt.close()
 
-    return yvals, left_fitx, right_fitx
+    return left_yvals, right_yvals, left_fitx, right_fitx
 
 def seek(blank, image_slice, pos, top, bottom, search_window):
     pixels = image_slice[:, (pos - search_window): (pos + search_window)]
@@ -92,18 +93,11 @@ def get_curvature(yvals, fit):
     # Example values: 1163.9    1213.7
     return curverad
 
-def draw(image, yvals, left_fitx, right_fitx):
+def draw(image, left_yvals, right_yvals, left_fitx, right_fitx):
 
     # Create an image to draw the lines on
     warp_zero = np.zeros_like(image).astype(np.uint8)
     color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
-
-    print(yvals.shape, left_fitx.shape)
-    
-    left_yvals = yvals[:len(left_fitx)]
-    right_yvals = yvals[:len(right_fitx)]
-
-    print(left_yvals.shape, left_fitx.shape)
 
     # Recast the x and y points into usable format for cv2.fillPoly()
     pts_left = np.array([np.transpose(np.vstack([left_fitx, left_yvals]))])
