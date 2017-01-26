@@ -2,7 +2,6 @@ import numpy as np
 import glob
 import cv2
 import pickle
-from advanced_lane_lines.log import Logger
 
 calibration = None
 path = "camera_cal/calibration.p"
@@ -11,7 +10,7 @@ try:
 except(Exception) as e:
     pass
 
-def calibrate_camera():
+def calibrate():
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
     objp = np.zeros((6*9,3), np.float32)
     objp[:,:2] = np.mgrid[0:9, 0:6].T.reshape(-1,2)
@@ -51,9 +50,4 @@ def get_calibration():
 
 def undistort(image):
     cal = get_calibration()
-    image = cv2.undistort(image, cal.get('mtx'), cal.get('dist'))
-
-    Logger.undistort = image
-    Logger.save(image, 'undistort')
-    return image
-
+    return cv2.undistort(image, cal.get('mtx'), cal.get('dist'))

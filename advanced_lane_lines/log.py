@@ -12,6 +12,9 @@ frames = int(config.get('logging', 'frames'))
 
 class Logger():
 
+    """ Class to save debug output for each step in the pipeline """
+
+    # if True, saves each step in the pipeline as an image to output_images
     logging = False
 
     # these properties are used for output filename
@@ -19,13 +22,6 @@ class Logger():
     source = None # name of the input image
     frame = 0 # frame in the video
     step = 1 # step number for image pipeline
-
-    # unmodified image is kept for comparison
-    unmodified = None
-
-    # the undistorted image is useful in context to perspective transforms
-    # where the image being modified is thresholded
-    undistorted = None
 
     @staticmethod
     def increment():
@@ -80,7 +76,7 @@ class Logger():
         if Logger.mode == 'video':
             fname += '-' + str(Logger.frame)
 
-        fname += '.png'
+        fname += '.jpg'
 
         if image_type == 'ndarray':
             mpimg.imsave(fname, image)
