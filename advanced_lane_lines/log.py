@@ -67,14 +67,14 @@ class Logger():
         # if image/video source is given use as prefix
         if Logger.source:
             source = splitext(basename(Logger.source))[0]
-            fname += source + '-'
-
-        # the processing step number/name -- ex: 02-
-        fname += str(Logger.step).zfill(2) + '-' + name
+            fname += source
 
         # if video mode, include the frame number
         if Logger.mode == 'video':
             fname += '-' + str(Logger.frame)
+
+        # the processing step number/name -- ex: 02-
+        fname += '-' + str(Logger.step).zfill(2) + '-' + name
 
         fname += '.jpg'
 

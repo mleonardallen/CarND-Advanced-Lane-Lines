@@ -1,4 +1,4 @@
-import advanced_lane_lines.pipeline as pipeline
+from advanced_lane_lines.pipeline import Pipeline
 from advanced_lane_lines.log import Logger
 import advanced_lane_lines.calibration as calibration
 from moviepy.editor import VideoFileClip
@@ -12,6 +12,7 @@ def main(mode=None, source=None, out=None, log=False):
     # log properties
     Logger.logging = log
     Logger.mode = mode
+    pipeline = Pipeline()
 
     if mode == 'test_images':
         images = glob.glob('test_images/*.jpg')
