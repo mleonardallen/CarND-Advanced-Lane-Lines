@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import copy
 import advanced_lane_lines.util as util
+from advanced_lane_lines.log import Logger
 
 class Perspective():
     """ Class to manage perspective transform """
@@ -58,6 +59,7 @@ class Perspective():
     def get_transform_points(self, image):
         # first get the lines
         hough_lines = self.hough_transform(image)
+
         left = self.get_average_line(image.shape, hough_lines, self.line_angles.get('left'))
         right = self.get_average_line(image.shape, hough_lines, self.line_angles.get('right'))
 
@@ -74,17 +76,18 @@ class Perspective():
 
         intersection = self.line_intersection(left, right)
 
-        lb = intersection[1] - lslope * intersection[0]
-        rb = intersection[1] - rslope * intersection[0]
+        left_b = intersection[1] - lslope * intersection[0]
+        right_b = intersection[1] - rslope * intersection[0]
 
-        backoff = 25
-        yi =  intersection[1] + backoff
-        xl = int((yi - lb) / lslope)
-        xr = int((yi - rb) / rslope)
+        backoff = 35
+        top_y =  intersection[1] + backoff
+
+        left_top_x = int((top_y - left_b) / lslope)
+        right_top_x = int((top_y - right_b) / rslope)
 
         src = {
-            'tl': (xl, yi),
-            'tr': (xr, yi),
+            'tl': (left_top_x, top_y),
+            'tr': (right_top_x, top_y),
             'bl': (left[0][0], left[0][1]),
             'br': (right[0][0], right[0][1]),
         }
@@ -101,10 +104,23 @@ class Perspective():
     def hough_transform(self, image):
         rho = 1 # distance resolution in pixels of the Hough grid
         theta = np.pi/180 # angular resolution in radians of the Hough grid
-        threshold = 40    # minimum number of votes (intersections in Hough grid cell)
+        threshold = 50    # minimum number of votes (intersections in Hough grid cell)
         min_line_len = 15 #minimum number of pixels making up a line
-        max_line_gap = 10    # maximum gap in pixels between connectable line segments
-        return cv2.HoughLinesP(image, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
+        max_line_gap = 30    # maximum gap in pixels between connectable line segments
+        hough_lines = cv2.HoughLinesP(image, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
+
+        # save debug image
+        color_image = np.dstack((image, image, image)) * 255
+        line_image = np.zeros_like(color_image)
+
+        for line in hough_lines:
+            for x1,y1,x2,y2 in line:
+                cv2.line(line_image, (x1,y1), (x2,y2), (255,0,0), 10)
+
+        line_image = cv2.addWeighted(color_image, 0.7, line_image, 0.7, 0)
+        Logger.save(line_image, 'hough-lines')
+
+        return hough_lines
 
     def get_average_line(self, image_size, hough_lines, limit):
 

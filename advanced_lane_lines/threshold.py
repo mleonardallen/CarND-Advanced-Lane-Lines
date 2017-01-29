@@ -17,33 +17,31 @@ def combined_thresh(image):
     Sobel directional, magnitude, and direction combined
     """
 
+    # Sobel X Threshold
     sobelx = abs_sobel_thresh(image, orient='x', sobel_kernel=3, thresh=thresholds.get('sobelx'))
-    Logger.save(sobelx, 'sobelx')
+    Logger.save(sobelx, 'sobelx-binary')
 
-    # Sobel threshold
-    # mag_binary = mag_thresh(image, sobel_kernel=kernels.get('magnitude'), thresh=thresholds.get('magnitude'))
-    # Logger.save(mag_binary, 'magnitude-binary')
-
-    # dir_binary = dir_threshold(image, sobel_kernel=kernels.get('direction'), thresh=thresholds.get('direction'))
-    # Logger.save(dir_binary, 'direction-binary')
-
-    # sobel_binary = np.zeros_like(mag_binary)
-    # sobel_binary[((mag_binary == 1) & (dir_binary == 1))] = 1
-    # Logger.save(sobel_binary, 'magnitude-and-direction-binary')
-
-    # Saturation threshold (high)
+    # Saturation Threshold
     saturation_binary = hls_select(image, thresh=thresholds.get('saturation'), channel=2)
     Logger.save(saturation_binary, 'saturation-binary')
 
+    # Lightness Threshold
     lightness_binary = hls_select(image, thresh=thresholds.get('lightness'), channel=1)
     Logger.save(lightness_binary, 'lightness-binary')
 
+    # Sobel + Lightness
+    sobel_and_light = np.zeros_like(sobelx)
+    sobel_and_light[((sobelx == 1) & (lightness_binary == 1))] = 1
+    Logger.save(sobel_and_light, 'sobel-and-lightness-binary')
+
+    # Saturation + Lightness Threshold
     sat_and_light = np.zeros_like(saturation_binary)
     sat_and_light[((saturation_binary == 1) & (lightness_binary == 1))] = 1
-    Logger.save(sat_and_light, 'saturation-and-lightness')
+    Logger.save(sat_and_light, 'saturation-and-lightness-binary')
 
+    # Combined Threshold
     binary_output = np.zeros(image.shape[:2], dtype='uint8')
-    binary_output[(sobelx == 1) | (sat_and_light == 1)] = 1
+    binary_output[(sobel_and_light == 1) | (sat_and_light == 1)] = 1
 
     return binary_output
 
@@ -51,7 +49,6 @@ def hls_select(img, thresh=(0, 1), channel=2):
     """ Returns HLS channel thresholded binary image """
 
     # Convert to HLS color space
-
     img = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
     img = img[:,:, channel]
 
@@ -66,11 +63,7 @@ def abs_sobel_thresh(img, orient = 'x', sobel_kernel = 3, thresh = (0, 255)):
 
     # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
-
-    # kernel = np.ones((3, 3), np.uint8)
-    # gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
-    # Logger.save(gray, 'blur')
+    gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
     # Take the gradient in given orientation
     if orient == 'x':
@@ -97,8 +90,6 @@ def mag_thresh(img, sobel_kernel = 3, thresh = (0, 255)):
 
     # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    # kernel = np.ones((3, 3), np.uint8)
-    # gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
     gray = cv2.GaussianBlur(gray, (3, 3), 0)
 
     # Take the gradient in x and y separately

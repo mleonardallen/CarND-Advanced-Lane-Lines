@@ -1,11 +1,13 @@
 import advanced_lane_lines.calibration as calibration
 import advanced_lane_lines.threshold as threshold
 import advanced_lane_lines.mask as mask
-import advanced_lane_lines.overlay as overlay
+
 import advanced_lane_lines.lane_finder as lane_finder
 from advanced_lane_lines.log import Logger
 from advanced_lane_lines.line import Line
 from advanced_lane_lines.perspective import Perspective
+from advanced_lane_lines.overlay import Overlay
+import matplotlib.pyplot as plt
 import copy
 import cv2
 
@@ -18,6 +20,7 @@ class Pipeline():
         self.left = Line()
         self.right = Line()
         self.perspective = Perspective()
+        self.overlay = Overlay()
 
     def process(self, image):
 
@@ -47,20 +50,22 @@ class Pipeline():
 
         # Detect lane pixels and fit to find lane boundary.
         left_pixels, right_pixels = lane_finder.get_lane_pixels(transformed_image)
-        left_yvals, left_xvals, left_fitx = self.left.fit(left_pixels)
-        right_yvals, right_xvals, right_fitx = self.right.fit(right_pixels)
+
+        self.left.fit(left_pixels)
+        self.right.fit(right_pixels)
+
         lane_finder.plot(self.left, self.right, transformed_image.shape)
-        lane_boundaries = overlay.draw(transformed_image, left_yvals, right_yvals, left_fitx, right_fitx)
+        lane_boundaries = self.overlay.draw(transformed_image, self.left, self.right)
 
         # Warp the detected lane boundaries back onto the original image.
         # Combine the result with the original image
+
         lane_boundaries = self.perspective.transform(lane_boundaries, Minv)
         image = cv2.addWeighted(undistorted_image, 1, lane_boundaries, 0.3, 0)
-        Logger.save(image, 'lane-boundaries')
-
         # Determine curvature of the lane and vehicle position with respect to center.
-
+        image = self.overlay.stats(image, self.left, self.right)
 
         # Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+        Logger.save(image, 'final')
         Logger.increment()
         return image
