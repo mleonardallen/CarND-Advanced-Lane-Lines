@@ -94,7 +94,27 @@ This binary is a combination of sobel x, saturation, and lightness.
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The code for my perspective transform includes a function called `get_transform_points()`, which appears in the file `advanced_lane_lines/perspective.py`.  The `get_transform_points()` function takes as inputs an image (`img`), and returns source (`src`) and destination (`dest`) points.
+
+Because each test image and video has different resolution and camera mount setup, I chose to not hardcode the source and destination points.  Instead, to determine these points, I repurposed lane line detection code from my [CarND-LaneLines-P1 Project](https://github.com/mleonardallen/CarND-LaneLines-P1).  Although we will draw these lane lines on our final output display, we can use them as a good approximation for where to do the perspective transoform.
+
+##### Masked
+Mask image to focus on area of the image that contains lane lines.
+
+[Masked](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-09-masked-image.jpg)
+
+##### Hough Lines
+Using hough transform (method `hough_transform` in `perspective.py`), I detect lines within the masked binary image.  Hough lines are then sorted into left and right lanes and averaged (method `get_average_line` in `perspective.py`).
+
+![Hough Lines](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-10-hough-lines.jpg)
+
+##### Source Points
+
+![Source Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-11-perspective-transform-src.jpg)
+
+![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
+
+
 
 ```
 src = np.float32(
