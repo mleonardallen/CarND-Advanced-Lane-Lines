@@ -67,29 +67,30 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 ![Undistorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-02-undistorted.jpg)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image (thresholding meth in method `combined_thresh` in `advanced_lane_lines/threshold.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 
 ##### Sobel X Binary
+First, I take a sobel threshold in the x direction.  This limits vertical gradients which would not contain lane lines in our test image or project video.  I decided to go with this instead of a more general magnitude and direction combination because I would essentially be trying to reproduce sobel x.
+
 ![Sobel X Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-03-sobelx-binary.jpg)
 
 ##### Saturation Binary
+
+Saturation is better at picking out yellow lines in some scenarios, such as a yellow line on a brown road.
+
 ![Saturation Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-04-saturation-binary.jpg)
 
 ##### Lightness Binary
+
+A lightness binary is used to remove extrenous pixels contained in the saturation and sobel binaries.  The idea here is that the dark parts picked up by saturation or sobel are either shadow or other marks in the road unrelated to lane lines.
+
 ![Lightness Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-05-lightness-binary.jpg)
 
-##### Sobel X and Lightness Binary
-![Sobel X and Lightness Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-06-sobel-and-lightness-binary.jpg)
-
-##### Saturation and Lightness Binary
-![Saturation and Lightness Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-07-saturation-and-lightness-binary.jpg)
-
 ##### Combined Binary
+
+This binary is a combination of sobel x, saturation, and lightness.
+
 ![Combined Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-08-combined-binary.jpg)
-
-
-
-![Undistorted](IMAGE)
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
