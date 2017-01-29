@@ -26,7 +26,12 @@ def main(mode=None, source=None, out=None, log=False):
         output_video = source_video.fl_image(pipeline.process)
         output_video.write_videofile(out, audio=False)
     elif mode == 'calibrate':
-        calibration.calibrate()
+        images = glob.glob('camera_cal/calibration*.jpg')
+        calibration.calibrate(images)
+        for idx, fname in enumerate(images):
+            image = imread(fname)
+            image = calibration.undistort(image)
+            Logger.save(image, 'undistored')
 
 if __name__ == '__main__':
 
