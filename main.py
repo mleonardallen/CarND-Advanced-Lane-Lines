@@ -29,6 +29,7 @@ def main(mode=None, source=None, out=None, log=False):
         images = glob.glob('camera_cal/calibration*.jpg')
         calibration.calibrate(images)
         for idx, fname in enumerate(images):
+            Logger.source = fname
             image = imread(fname)
             image = calibration.undistort(image)
             Logger.save(image, 'undistored')
