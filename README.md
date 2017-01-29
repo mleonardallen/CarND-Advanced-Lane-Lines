@@ -69,6 +69,26 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 
+##### Sobel X Binary
+![Sobel X Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-03-sobelx-binary.jpg)
+
+##### Saturation Binary
+![Saturation Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-04-saturation-binary.jpg)
+
+##### Lightness Binary
+![Lightness Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-05-lightness-binary.jpg)
+
+##### Sobel X and Lightness Binary
+![Sobel X and Lightness Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-06-sobel-and-lightness-binary.jpg)
+
+##### Saturation and Lightness Binary
+![Saturation and Lightness Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-07-saturation-and-lightness-binary.jpg)
+
+##### Combined Binary
+![Combined Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-08-combined-binary.jpg)
+
+
+
 ![Undistorted](IMAGE)
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
