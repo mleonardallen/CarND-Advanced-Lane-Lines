@@ -51,7 +51,11 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![alt text][image1]
+##### Distorted
+![Distorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/camera_cal/calibration1.jpg)
+
+##### Undistorted
+![Undistorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/calibrate/calibration1-16-undistored.jpg)
 
 ###Pipeline (single images)
 
