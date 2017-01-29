@@ -61,11 +61,15 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 
 ####1. Provide an example of a distortion-corrected image.
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+
+![Original](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-01-original.jpg)
+
+![Undistorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-01-undistorted.jpg)
+
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 
-![alt text][image3]
+![Undistorted](IMAGE)
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
