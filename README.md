@@ -182,7 +182,7 @@ In order to account for negative scenarios, if we did not detect lane pixels, a 
 
 Also, in order to have smoother transitions between frames, an average over the previous `10` frames is leveraged.  The weight of each frame in the average is determined by the spread of y values within the detected pixels as well as a decay as the frame gets further away in time.
 
-Once we have our polynomial coefficients, I generate new x and y values for later drawing the lane overlay.  This is because we may not have enough detected lane pixels to cover a large area within the drawn overlay.  The generated data more consistantly covers a larger area.
+_Note: Once we have our polynomial coefficients, I generate new x and y values for later drawing the lane overlay.  This is because we may not have enough detected lane pixels to cover a large area within the drawn overlay.  The generated data more consistantly covers a larger area._
 
 ![2nd Order Polynomial](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-16-curvature.jpg)
 
