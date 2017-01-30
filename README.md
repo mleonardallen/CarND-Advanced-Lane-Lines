@@ -136,7 +136,7 @@ Now that we have average left and right lines, we can calculate the source point
 
 Using a technique described in the [Udacity Forums](https://carnd-forums.udacity.com/cq/viewquestion.action?id=29494501&answerId=34575350), I determine the vanishing point (method `line_intersection` in `perspective.py`), and then back off a little for the top points.  In experimenting, I found that getting too close to the vanishing point gave an increasingly blurry transformation.
 
-##### Perspective Transform Step: Debug Output
+##### Perspective Transform Step #4: Debug Output
 
 _Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here in this example because I found it more useful for visualizing the transformation._
 
@@ -146,15 +146,36 @@ Destination points are relatively simple compared to the source points.  Basical
 
 ![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
 
+##### Perspective Transform Step #5: Transform
+
 I verified that my perspective transform was working as expected by drawing the `src` and `dest` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
 ![Warped Image](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-13-perspective-transform-binary.jpg)
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
+##### Lane Line Pixels Step #1: Histogram
+The first step in detecting lane line pixels is to take a histogram of the birds-eye view thresholded image.
+
+```
+histogram = np.sum(image[image.shape[0]/2:,:], axis=0)
+```
+
+The resulting peaks in the histogram are great indicators for where to start looking for lane line pixels.
+
+![Histogram](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-14-histogram.jpg)
+
+##### Lane Line Pixels Step #2: Window Seek
+
+Using the starting position from the histogram view the image through a small window.  Taking an average of the x values within the window will tell us which direction to move the window in for our next slice as we go up the image looking for lane line pixels.
+
+![Window Seek](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-15-lane-seek.jpg)
+
+##### Lane Line Pixels Step #3: Fit Polynomial
+
 Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
 
-![alt text][image5]
+![Polynomial](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-16-curvature.jpg)
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
