@@ -136,7 +136,7 @@ Now that we have average left and right lines, we can calculate the source point
 
 Using a technique described in the [Udacity Forums](https://carnd-forums.udacity.com/cq/viewquestion.action?id=29494501&answerId=34575350), I determine the vanishing point (method `line_intersection` in `perspective.py`), and then back off a little for the top points.  In experimenting, I found that getting too close to the vanishing point gave an increasingly blurry transformation.
 
-Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here just because I found it more useful for visualizing the transformation.
+_Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here in this example because I found it more useful for visualizing the transformation._
 
 ![Source Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-11-perspective-transform-src.jpg)
 
