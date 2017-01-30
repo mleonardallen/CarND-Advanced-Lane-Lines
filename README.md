@@ -218,5 +218,15 @@ Here's a [link to my video result](./project_video.mp4)
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+#### Thresholded Binary Image
+This section contained a lot of tweaking of parameters.  I started by extracting values into a config file so that I could adjust values all in one spot.  This helped me when I needed to go back and change parameters.  However, in the end, not all parameters made it into the config file.  Considering the vast number of possible parameters, it is not feasible to a human to search the entire space getting the best possible combinations.  In order improve this, I would want to set up some sort of grid search that includes possible parameter combinations as well binary thresholded combinations.  This introduces the issue of what to use as error metric when determining the best combinations, but perhaps a human could label the correct pixels in each frame, and the loss function could compare the thresholded pixels vs the human labeled pixels.
 
+#### Perspective Transform
+Here, information from the previous frames can be used to provide a starting search location.  Instead of using a window seek method, I could use the current fitted polynomial could be leveraged to find the lane pixels in the next frame.  This would be more stable for frames with noisy lane pixels.
+
+Another method for a more stable transform step could be to leverage the intrinsic (focal length and optical center) and extrinsic (pitch angle, yaw angle, and height) to perform the bird-eye view transformation.  Since these properties do not change from frame to frame, this would result in a transformation that is stable through trouble frames where the lane lines are not easy to detect.  Method detailed in this [Paper](http://www.vision.caltech.edu/malaa/publications/aly08realtime.pdf)
+
+Another issue that could pose a problem when doing the perspective transform as well as other steps is obstacles such as cars or debris in the road.  For example if a car is crossing a lane, this could make detecting lane lines very difficult.  One possible solution is that we can use sensor fusion to determine which pixels are likely a car or other object.
+
+#### Line Curvature
+I chose to take a weighted average to determine line curvature, which results in a more stable curve, but also creates a less accurate fit since the previous frames are causing the current fit to be pulled in the direction of previous frames.  One possible improvement would be to introduce a low-pass filter that is resistant to large changes, but allows small changes to go though.
