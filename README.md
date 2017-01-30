@@ -109,6 +109,8 @@ This binary is a combination of `sobel x` or `saturation`, and `lightness` thres
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
+Because each test image and video has different resolution and camera mount setup, I chose to not hardcode the source and destination points.  Instead, to determine these points, I repurposed lane line detection code from my [CarND-LaneLines-P1 Project](https://github.com/mleonardallen/CarND-LaneLines-P1).  Although we will draw these lane lines on our final output display, we can use them as a good approximation for where to do the perspective transoform using these lines.
+
 The code for my perspective transform includes a function called `get_transform_points()`, which appears in the file `advanced_lane_lines/perspective.py`.  The `get_transform_points()` function takes as inputs an image (`img`), and returns source (`src`) and destination (`dest`) points.
 
 Example resulting source and destination points (changes for each image):
@@ -119,8 +121,6 @@ Example resulting source and destination points (changes for each image):
 | 276, 720      | 276, 720      |
 | 619, 469     | 276, 0      |
 | 722, 469      | 1116, 0        |
-
-Because each test image and video has different resolution and camera mount setup, I chose to not hardcode the source and destination points.  Instead, to determine these points, I repurposed lane line detection code from my [CarND-LaneLines-P1 Project](https://github.com/mleonardallen/CarND-LaneLines-P1).  Although we will draw these lane lines on our final output display, we can use them as a good approximation for where to do the perspective transoform using these lines.
 
 ##### Perspective Transform Step #1: Mask Image
 Mask image to focus on area of the image that contains lane lines (method `mask_image` in `advanced_lane_lines/mask.py`)
