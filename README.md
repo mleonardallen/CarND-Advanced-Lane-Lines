@@ -78,7 +78,6 @@ The first step in the pipeline (method `process` in `advanced_lane_lines/pipelin
 image = calibration.undistort(image)
 ```
 
-
 ![Undistorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-02-undistorted.jpg)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
@@ -199,6 +198,8 @@ Similarly, distance from center first calculates the distance of each lane from 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
 I implemented this step in `advanced_lane_lines/overlay.py` in the function `draw()`, which takes the birds-eye view image and fills in a polygon defined by the left and right line fitted points.
+
+Once the overlay is drawn we then transform back to the original perspective (method `transform` in `advanced_lane_lines/perspective.py`).  This time however, our transform takes the inverse matrix of our original transformation.
 
 Curvature and distance from center text is handled in `stats()`.  Here is an example of my result on a test image:
 
