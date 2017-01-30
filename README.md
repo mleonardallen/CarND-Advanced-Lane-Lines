@@ -224,6 +224,10 @@ This section contained a lot of tweaking of parameters.  I started by extracting
 #### Perspective Transform
 Here, information from the previous frames can be used to provide a starting search location.  Instead of using a window seek method, I could use the current fitted polynomial could be leveraged to find the lane pixels in the next frame.  This would be more stable for frames with noisy lane pixels.
 
+This step in the pipeline includes a masking step, however a more sophisticated mask might be leveraged.  Using the previous fitted curve, we could the and area around a single lane line, exluding more extraneous pixels and getting a better estimate for the lane lines during the perspective transform.
+
+After testing my model on the challenge video, I noted that the binary thresholded image did not exclude many crack lines that ran parallel to the lane.  Since these lines fell into my range for an appropriate angle for a lane line, they were included into to sorted left and right arrays for lane pixels.  Better thresholding or masking could exclude these lines.
+
 Another method for a more stable transform step could be to leverage the intrinsic (focal length and optical center) and extrinsic (pitch angle, yaw angle, and height) to perform the bird-eye view transformation.  Since these properties do not change from frame to frame, this would result in a transformation that is stable through trouble frames where the lane lines are not easy to detect.  Method detailed in this [Paper](http://www.vision.caltech.edu/malaa/publications/aly08realtime.pdf)
 
 Another issue that could pose a problem when doing the perspective transform as well as other steps is obstacles such as cars or debris in the road.  For example if a car is crossing a lane, this could make detecting lane lines very difficult.  One possible solution is that we can use sensor fusion to determine which pixels are likely a car or other object.
