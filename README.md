@@ -180,13 +180,15 @@ In order to draw the lane overlay, we first need to fit a polynomial using the l
 
 In order to account for negative scenarios, if we did not detect lane pixels, a previous fit is leveraged.
 
-Also, in order to have smoother transitions between frames, an average over the previous `10` frames is leveraged.  The weight of each frame in the average is dertermined by the spread of y values within the detected pixels as well as a decay as the frame gets further away in time.
+Also, in order to have smoother transitions between frames, an average over the previous `10` frames is leveraged.  The weight of each frame in the average is determined by the spread of y values within the detected pixels as well as a decay as the frame gets further away in time.
+
+Once we have our polynomial coefficients, I generate new x and y values for later drawing the lane overlay.  This is because we may not have enough detected lane pixels to cover a large area within the drawn overlay.  The generated data more consistantly covers a larger area.
 
 ![2nd Order Polynomial](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-16-curvature.jpg)
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-For curvature, see `get_curvature` in my code in `advanced_lane_lines/line.py`.  Pixel curvature is converted into meters using conversion values provided by Udacity.
+For curvature, see `get_curvature` in my code in `advanced_lane_lines/line.py`.  Pixel curvature is converted into meters using conversion values provided by Udacity.  For my purposes, a curvature radious over 1000 m is considered straight.
 
 ```
 xm_per_pix = 3.7/700 # meteres per pixel in x dimension
@@ -197,7 +199,9 @@ Similarly, distance from center first calculates the distance of each lane from 
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in `advanced_lane_lines/overlay.py` in the function `draw()`.  Curvature and distance from center text is handled in `stats()`.  Here is an example of my result on a test image:
+I implemented this step in `advanced_lane_lines/overlay.py` in the function `draw()`, which takes the bird's eye view image and fills in a polygon defined by the left and right line fitted points.
+
+Curvature and distance from center text is handled in `stats()`.  Here is an example of my result on a test image:
 
 ![Final Result](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-17-final.jpg)
 
