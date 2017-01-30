@@ -33,9 +33,7 @@ class Pipeline():
 
         # Use color transforms, gradients, etc., to create a thresholded binary image.
         thresholded_image = threshold.combined_thresh(image)
-        Logger.save(thresholded_image, 'combined-binary')
-        masked_image, image_mask = mask.mask_image(thresholded_image)
-        Logger.save(masked_image, 'masked-image')
+        masked_image = mask.mask_image(thresholded_image)
 
         # Apply a perspective transform to rectify binary image ("birds-eye view").
         src, dest = self.perspective.get_transform_points(masked_image)
@@ -59,13 +57,12 @@ class Pipeline():
 
         # Warp the detected lane boundaries back onto the original image.
         # Combine the result with the original image
-
         lane_boundaries = self.perspective.transform(lane_boundaries, Minv)
         image = cv2.addWeighted(undistorted_image, 1, lane_boundaries, 0.3, 0)
-        # Determine curvature of the lane and vehicle position with respect to center.
-        image = self.overlay.stats(image, self.left, self.right)
 
+        # Determine curvature of the lane and vehicle position with respect to center.
         # Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+        image = self.overlay.stats(image, self.left, self.right)
         Logger.save(image, 'final')
         Logger.increment()
         return image

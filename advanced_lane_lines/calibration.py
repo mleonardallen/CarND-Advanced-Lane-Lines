@@ -11,13 +11,21 @@ except(Exception) as e:
     pass
 
 def calibrate(images):
-    # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
-    objp = np.zeros((6*9,3), np.float32)
-    objp[:,:2] = np.mgrid[0:9, 0:6].T.reshape(-1,2)
 
     # Arrays to store object points and image points from all the images.
     objpoints = [] # 3d points in real world space
     imgpoints = [] # 2d points in image plane.
+
+    # not able to find all corners for all images
+    # try finding as many corners as possible
+    sizes = [(9,6), (8,6), (9,5), (7,6)]
+
+    # prepare object points for varying sizes, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
+    objps = [np.zeros((size[0] * size[1],3), np.float32) for size in sizes]
+    for idx, objp in enumerate(objps):
+        size = sizes[idx]
+        objp[:,:2] = np.mgrid[0:size[0], 0:size[1]].T.reshape(-1,2)
+        objps[idx] = objp
 
     # Step through the list and search for chessboard corners
     for idx, fname in enumerate(images):
@@ -25,12 +33,16 @@ def calibrate(images):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # Find the chessboard corners
-        ret, corners = cv2.findChessboardCorners(gray, (9,6), None)
+        for objp_idx, objp in enumerate(objps):
+            size = sizes[objp_idx]
 
-        # If found, add object points, image points
-        if ret == True:
-            objpoints.append(objp)
-            imgpoints.append(corners)
+            ret, corners = cv2.findChessboardCorners(gray, size, None)
+
+            # If found, add object points, image points
+            if ret == True:
+                objpoints.append(objp)
+                imgpoints.append(corners)
+                break
 
     img_size = (gray.shape[1], gray.shape[0])
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)

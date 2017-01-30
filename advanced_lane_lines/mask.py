@@ -1,3 +1,4 @@
+from advanced_lane_lines.log import Logger
 import advanced_lane_lines.util as util
 import numpy as np
 import cv2
@@ -44,4 +45,6 @@ def mask_image(image):
     
     #returning the image only where mask pixels are nonzero
     masked_image = cv2.bitwise_and(image, mask)
-    return masked_image, mask
+    Logger.save(masked_image, 'masked-image')
+
+    return masked_image

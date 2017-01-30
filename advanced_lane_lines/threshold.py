@@ -29,19 +29,11 @@ def combined_thresh(image):
     lightness_binary = hls_select(image, thresh=thresholds.get('lightness'), channel=1)
     Logger.save(lightness_binary, 'lightness-binary')
 
-    # Sobel + Lightness
-    sobel_and_light = np.zeros_like(sobelx)
-    sobel_and_light[((sobelx == 1) & (lightness_binary == 1))] = 1
-    Logger.save(sobel_and_light, 'sobel-and-lightness-binary')
-
-    # Saturation + Lightness Threshold
-    sat_and_light = np.zeros_like(saturation_binary)
-    sat_and_light[((saturation_binary == 1) & (lightness_binary == 1))] = 1
-    Logger.save(sat_and_light, 'saturation-and-lightness-binary')
-
     # Combined Threshold
     binary_output = np.zeros(image.shape[:2], dtype='uint8')
-    binary_output[(sobel_and_light == 1) | (sat_and_light == 1)] = 1
+    binary_output[((sobelx == 1) | (saturation_binary == 1)) & lightness_binary == 1] = 1
+
+    Logger.save(binary_output, 'combined-binary')
 
     return binary_output
 
