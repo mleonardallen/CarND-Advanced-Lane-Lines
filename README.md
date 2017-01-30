@@ -210,7 +210,7 @@ Curvature and distance from center text is handled in `stats()`.  Here is an exa
 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](https://youtu.be/TgBc9m3ZesA)
 
 ---
 
