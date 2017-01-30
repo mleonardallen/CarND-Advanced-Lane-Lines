@@ -94,27 +94,7 @@ This binary is a combination of sobel x, saturation, and lightness.
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `get_transform_points()`, which appears in the file `advanced_lane_lines/perspective.py`.  The `get_transform_points()` function takes as inputs an image (`img`), and returns source (`src`) and destination (`dest`) points.
-
-Because each test image and video has different resolution and camera mount setup, I chose to not hardcode the source and destination points.  Instead, to determine these points, I repurposed lane line detection code from my [CarND-LaneLines-P1 Project](https://github.com/mleonardallen/CarND-LaneLines-P1).  Although we will draw these lane lines on our final output display, we can use them as a good approximation for where to do the perspective transoform.
-
-##### Masked
-Mask image to focus on area of the image that contains lane lines.
-
-[Masked](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-09-masked-image.jpg)
-
-##### Hough Lines
-Using hough transform (method `hough_transform` in `perspective.py`), I detect lines within the masked binary image.  Hough lines are then sorted into left and right lanes and averaged (method `get_average_line` in `perspective.py`).
-
-![Hough Lines](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-10-hough-lines.jpg)
-
-##### Source Points
-
-![Source Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-11-perspective-transform-src.jpg)
-
-![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
-
-
+The code for my perspective transform includes a function called `get_transform_points()`, which appears in the file `advanced_lane_lines/perspective.py`.  The `get_transform_points()` function takes as inputs an image (`img`), and returns source (`src`) and destination (`dest`) points.  The resulting points are as shown in the example below.
 
 ```
 src = np.float32(
@@ -138,9 +118,37 @@ This resulted in the following source and destination points:
 | 1127, 720     | 960, 720      |
 | 695, 460      | 960, 0        |
 
+Because each test image and video has different resolution and camera mount setup, I chose to not hardcode the source and destination points.  Instead, to determine these points, I repurposed lane line detection code from my [CarND-LaneLines-P1 Project](https://github.com/mleonardallen/CarND-LaneLines-P1).  Although we will draw these lane lines on our final output display, we can use them as a good approximation for where to do the perspective transoform using these lines.
+
+##### Masked
+Mask image to focus on area of the image that contains lane lines (method `mask_image` in `advanced_lane_lines/mask.py`)
+
+![Masked](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-09-masked-image.jpg)
+
+##### Hough Lines
+Using hough transform (method `hough_transform` in `perspective.py`), I detect lines within the masked binary image.  Hough lines are then sorted into left and right lanes and averaged (method `get_average_line` in `perspective.py`).
+
+![Hough Lines](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-10-hough-lines.jpg)
+
+##### Source Points
+
+Now that we have average left and right lines, we can calculate the source points.  The bottom points will be the origin of the lines at the bottom of the image.  To determine the top points we will leverage the [Vanishing Point](https://en.wikipedia.org/wiki/Vanishing_point).  Parallel lines converge at the vanishing point, and since lane lanes are parellel we assume that they will converge at a vanishing point.  Another assumption we make is that we are dealing with relatively flat roads.
+
+Using a technique described in the [Udacity Forums](https://carnd-forums.udacity.com/cq/viewquestion.action?id=29494501&answerId=34575350), I determine the vanishing point (method `line_intersection` in `perspective.py`), and then back off a little for the top points.  In experimenting, I found that getting too close to the vanishing point gave an increasingly blurry transformation.
+
+Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here just because I found it more useful for visualizing the transformation.
+
+![Source Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-11-perspective-transform-src.jpg)
+
+##### Destination Points
+
+Destination points are relatively simple compared to the 
+
+![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
+
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![Warped Image](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-13-perspective-transform-binary.jpg)
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
