@@ -183,9 +183,9 @@ I did this in lines # through # in my code in `my_other_file.py`
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+I implemented this step in lines # through # in my code in `advanced_lane_lines/overlay.py` in the function `draw()`.  Curvature and distance from center text is created in `stats()`.  Here is an example of my result on a test image:
 
-![alt text][image6]
+![Final Result](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-17-final.jpg)
 
 ---
 
