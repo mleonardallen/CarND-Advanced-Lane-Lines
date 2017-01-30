@@ -141,7 +141,7 @@ Using a technique described in the [Udacity Forums](https://carnd-forums.udacity
 
 ##### Perspective Transform Step #4: Debug Output
 
-_Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here in this example because I found it more useful for visualizing the transformation._
+_Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here in this example instead of the binary thresholded image because I found it more useful for visualizing the transformation._
 
 Destination points are relatively simple compared to the source points.  Basically the destination points are at the top of the image have same x value as the points at the bottom.  The bottom points are the same as in the source points.
 
