@@ -149,7 +149,7 @@ Destination points are relatively simple compared to the source points.  Basical
 
 ![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
 
-##### Perspective Transform Step #5: Transform to Bird's Eye View
+##### Perspective Transform Step #5: Transform to Birds-Eye View
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dest` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
@@ -199,7 +199,7 @@ Similarly, distance from center first calculates the distance of each lane from 
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in `advanced_lane_lines/overlay.py` in the function `draw()`, which takes the bird's eye view image and fills in a polygon defined by the left and right line fitted points.
+I implemented this step in `advanced_lane_lines/overlay.py` in the function `draw()`, which takes the birds-eye view image and fills in a polygon defined by the left and right line fitted points.
 
 Curvature and distance from center text is handled in `stats()`.  Here is an example of my result on a test image:
 
