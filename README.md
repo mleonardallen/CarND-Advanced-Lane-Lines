@@ -120,33 +120,33 @@ This resulted in the following source and destination points:
 
 Because each test image and video has different resolution and camera mount setup, I chose to not hardcode the source and destination points.  Instead, to determine these points, I repurposed lane line detection code from my [CarND-LaneLines-P1 Project](https://github.com/mleonardallen/CarND-LaneLines-P1).  Although we will draw these lane lines on our final output display, we can use them as a good approximation for where to do the perspective transoform using these lines.
 
-##### Masked
+##### Perspective Transform Step #1: Mask Image
 Mask image to focus on area of the image that contains lane lines (method `mask_image` in `advanced_lane_lines/mask.py`)
 
 ![Masked](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-09-masked-image.jpg)
 
-##### Hough Lines
+##### Perspective Transform Step #2: Hough Lines and Average
 Using hough transform (method `hough_transform` in `perspective.py`), I detect lines within the masked binary image.  Hough lines are then sorted into left and right lanes and averaged (method `get_average_line` in `perspective.py`).
 
 ![Hough Lines](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-10-hough-lines.jpg)
 
-##### Source Points
+##### Perspective Transform Step #3: Vanishing Point
 
-Now that we have average left and right lines, we can calculate the source points.  The bottom points will be the origin of the lines at the bottom of the image.  To determine the top points we will leverage the [Vanishing Point](https://en.wikipedia.org/wiki/Vanishing_point).  Parallel lines converge at the vanishing point, and since lane lanes are parellel we assume that they will converge at a vanishing point.  Another assumption we make is that we are dealing with relatively flat roads.
+Now that we have average left and right lines, we can calculate the source points.  The bottom points will be the origin of the lines at the bottom of the image.  To determine the top points we will leverage the [Vanishing Point](https://en.wikipedia.org/wiki/Vanishing_point).  Parallel lines converge at a vanishing point, and since lane lanes are parellel we assume that they will converge at a vanishing point.  Another assumption we make is that we are dealing with relatively flat roads.
 
 Using a technique described in the [Udacity Forums](https://carnd-forums.udacity.com/cq/viewquestion.action?id=29494501&answerId=34575350), I determine the vanishing point (method `line_intersection` in `perspective.py`), and then back off a little for the top points.  In experimenting, I found that getting too close to the vanishing point gave an increasingly blurry transformation.
 
+##### Perspective Transform Step: Debug Output
+
 _Note: In the actual source image at this step is a binary thresholded image.  I am using the undistorted image here in this example because I found it more useful for visualizing the transformation._
+
+Destination points are relatively simple compared to the source points.  Basically the destination points are at the top of the image have same x value as the points at the bottom.  The bottom points are the same as in the source points.
 
 ![Source Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-11-perspective-transform-src.jpg)
 
-##### Destination Points
-
-Destination points are relatively simple compared to the 
-
 ![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
 
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+I verified that my perspective transform was working as expected by drawing the `src` and `dest` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
 ![Warped Image](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-13-perspective-transform-binary.jpg)
 
