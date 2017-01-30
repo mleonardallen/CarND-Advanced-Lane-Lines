@@ -45,7 +45,7 @@ The goals / steps of this project are the following:
 
 ####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the `calibrate` method located in `./advanced_lane_lines/calibration.py`.
+The code for this step is contained in the `calibrate` method located in `advanced_lane_lines/calibration.py`.
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world.  Because not all inner corners are visible in each image, I produce mutiple object points.  With each image I try to detect the most corners and then fall back until as many corners as possible are found.
 
@@ -83,7 +83,7 @@ image = calibration.undistort(image)
 ![Undistorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-02-undistorted.jpg)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
-I used a combination of color and gradient thresholds to generate a binary image (thresholding meth in method `combined_thresh` in `advanced_lane_lines/threshold.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image (method `combined_thresh` in `advanced_lane_lines/threshold.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 
 ##### Sobel X Binary
 First, I take a sobel threshold in the x direction.  This limits vertical gradients which would not contain lane lines in our test image or project video.  I decided to go with this instead of a more general magnitude and direction combination because I would essentially be trying to reproduce sobel x.
