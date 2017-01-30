@@ -47,7 +47,7 @@ The goals / steps of this project are the following:
 
 The code for this step is contained in the `calibrate` method located in `./advanced_lane_lines/calibration.py`.
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world.  Because not all inner corners are visible in each image, I product mutiple object points.  With each image I try to detect the most corners and then fall back until as many corners as possible are found.
+I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world.  Because not all inner corners are visible in each image, I produce mutiple object points.  With each image I try to detect the most corners and then fall back until as many corners as possible are found.
 
 ```
 sizes = [(9,6), (8,6), (9,5), (7,6)]
@@ -56,9 +56,7 @@ objps = [np.zeros((size[0] * size[1],3), np.float32) for size in sizes]
 
 If `cv2.findChessboardCorners()` detects the given size, the `objp` coordinates for the given size is appended to `objpoints`.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.
-
-The resulting matrix and distortion coefficients are then stored in a pickle file at `camera_cal/calibration.p`
+I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  The resulting matrix and distortion coefficients are then stored in a pickle file at `camera_cal/calibration.p`
 
 I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
