@@ -51,7 +51,6 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 
 ```
 sizes = [(9,6), (8,6), (9,5), (7,6)]
-objps = [np.zeros((size[0] * size[1],3), np.float32) for size in sizes]
 ```
 
 If `cv2.findChessboardCorners()` detects the given size, the `objp` coordinates for the given size is appended to `objpoints`.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
