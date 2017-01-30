@@ -104,7 +104,7 @@ A lightness binary is used to remove extrenous pixels contained in the saturatio
 
 ##### Combined Binary
 
-This binary is a combination of `sobel x` or `saturation`, and lightness thresholded binaries.
+This binary is a combination of `sobel x` or `saturation`, and `lightness` thresholded binaries.
 
 ![Combined Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-08-combined-binary.jpg)
 
