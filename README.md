@@ -58,7 +58,7 @@ If `cv2.findChessboardCorners()` detects the given size, the `objp` coordinates 
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  The resulting matrix and distortion coefficients are then stored in a pickle file at `camera_cal/calibration.p`
 
-I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+I applied this distortion correction to the camera calibration image using the `cv2.undistort()` function and obtained this result: 
 
 ##### Distorted
 ![Distorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/camera_cal/calibration1.jpg)
