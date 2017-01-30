@@ -149,7 +149,7 @@ Destination points are relatively simple compared to the source points.  Basical
 
 ![Destination Points](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-12-perspective-transform-dest.jpg)
 
-##### Perspective Transform Step #5: Transform
+##### Perspective Transform Step #5: Transform to Bird's Eye View
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dest` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
@@ -158,7 +158,7 @@ I verified that my perspective transform was working as expected by drawing the 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
 ##### Lane Line Pixels Step #1: Histogram
-The first step in detecting lane line pixels is to take a histogram of the birds-eye view thresholded image.
+The first step in detecting lane line pixels is to take a histogram of the birds-eye view thresholded image (method `get_histogram` in `advanced_lane_lines/lane_finder.py`)
 
 ```
 histogram = np.sum(image[image.shape[0]/2:,:], axis=0)
@@ -170,23 +170,34 @@ The resulting peaks in the histogram are great indicators for where to start loo
 
 ##### Lane Line Pixels Step #2: Window Seek
 
-Using the starting position from the histogram view the image through a small window.  Taking an average of the x values within the window will tell us which direction to move the window in for our next slice as we go up the image looking for lane line pixels.
+Using the starting position from the histogram view the image through a small window.  See method `get_lane_pixels` in `advanced_lane_lines/lane_finder.py`.  Taking an average of the x values within the window will tell us which direction to move the window in for our next slice as we go up the image looking for lane line pixels.
 
 ![Window Seek](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-15-lane-seek.jpg)
 
 ##### Lane Line Pixels Step #3: Fit Polynomial
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+In order to draw the lane overlay, we first need to fit a polynomial using the left and right lane pixels (method `fit` in `advanced_lane_lines/line.py`).  This function takes lane pixels and fits a 2nd order polynomial.
 
-![Polynomial](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-16-curvature.jpg)
+In order to account for negative scenarios, if we did not detect lane pixels, a previous fit is leveraged.
+
+Also, in order to have smoother transitions between frames, an average over the previous `10` frames is leveraged.  The weight of each frame in the average is dertermined by the spread of y values within the detected pixels as well as a decay as the frame gets further away in time.
+
+![2nd Order Polynomial](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-16-curvature.jpg)
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+For curvature, see `get_curvature` in my code in `advanced_lane_lines/line.py`.  Pixel curvature is converted into meters using conversion values provided by Udacity.
+
+```
+xm_per_pix = 3.7/700 # meteres per pixel in x dimension
+ym_per_pix = 30/720 # meters per pixel in y dimension
+```
+
+Similarly, distance from center first calculates the distance of each lane from the center of the image, and then converts to meters (method `get_distance_from_center` in `advanced_lane_lines/line.py`).  Since the left distance is negative and the right distance is positive, to get the total distance away from center, we add the left and right distances together.
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `advanced_lane_lines/overlay.py` in the function `draw()`.  Curvature and distance from center text is created in `stats()`.  Here is an example of my result on a test image:
+I implemented this step in `advanced_lane_lines/overlay.py` in the function `draw()`.  Curvature and distance from center text is handled in `stats()`.  Here is an example of my result on a test image:
 
 ![Final Result](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-17-final.jpg)
 
