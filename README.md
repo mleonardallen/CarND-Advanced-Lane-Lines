@@ -47,9 +47,20 @@ The goals / steps of this project are the following:
 
 The code for this step is contained in the `calibrate` method located in `./advanced_lane_lines/calibration.py`.
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world.  Because not all inner corners are visible in each image, I product mutiple object points.  With each image I try to detect the most corners and then fall back until as many corners as possible are found.
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+```
+sizes = [(9,6), (8,6), (9,5), (7,6)]
+objps = [np.zeros((size[0] * size[1],3), np.float32) for size in sizes]
+```
+
+If `cv2.findChessboardCorners()` detects the given size, the `objp` coordinates for the given size is appended to `objpoints`.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+
+I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.
+
+The resulting matrix and distortion coefficients are then stored in a pickle file at `camera_cal/calibration.p`
+
+I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
 ##### Distorted
 ![Distorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/camera_cal/calibration1.jpg)
@@ -64,6 +75,13 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 ![Original](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-01-original.jpg)
 
+The first step in the pipeline (method `process` in `advanced_lane_lines/pipeline.py`) is to undistort original image.  To do this we leverage the saved calibration data and `cv2.undistort()` (method `undistort` in `advanced_lane_lines/calibration.py`).
+
+```
+image = calibration.undistort(image)
+```
+
+
 ![Undistorted](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/test_images/solidWhiteRight-02-undistorted.jpg)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
@@ -76,7 +94,7 @@ First, I take a sobel threshold in the x direction.  This limits vertical gradie
 
 ##### Saturation Binary
 
-Saturation is better at picking out yellow lines in some scenarios, such as a yellow line on a brown road.
+Sobel thresholds have trouble in some scenarios, such as a yellow line on a brown road.  Saturation is better at picking out yellow lines in these scenarios.
 
 ![Saturation Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-04-saturation-binary.jpg)
 
@@ -88,7 +106,7 @@ A lightness binary is used to remove extrenous pixels contained in the saturatio
 
 ##### Combined Binary
 
-This binary is a combination of sobel x, saturation, and lightness.
+This binary is a combination of `sobel x` or `saturation`, and lightness thresholded binaries.
 
 ![Combined Binary](https://github.com/mleonardallen/CarND-Advanced-Lane-Lines/blob/master/output_images/video/project_video-600-08-combined-binary.jpg)
 
